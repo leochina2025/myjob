@@ -1,42 +1,35 @@
-# 文件位置：您的仓库中 /.github/workflows/stock-monitor.yml
-# 这是一个让GitHub自动运行您脚本的配置文件
-
-name: US Stock Monitor Bot # 工作流的名称
+name: US Stock Monitor Bot
 
 on:
   schedule:
-    # 注意：schedule 语法使用 UTC 时间！
-    # 北京时间晚上23:00 = UTC时间15:00 (15:00 UTC)
-    - cron: '00 15 * * *'  # 每天UTC 15:00运行
-    # 北京时间上午7:30 = UTC时间前一天23:30 (23:30 UTC)
-    - cron: '30 23 * * *'  # 每天UTC 23:30运行
-  workflow_dispatch: # 允许手动触发工作流
+    # 使用 UTC 时间
+    - cron: '00 15 * * *'  # 北京时间23:00
+    - cron: '30 23 * * *'  # 北京时间07:30
+  workflow_dispatch:       # 允许手动触发
 
 jobs:
   monitor:
-    runs-on: ubuntu-latest # 在最新Ubuntu系统上运行
-
+    runs-on: ubuntu-latest
     steps:
-      # 步骤1: 获取您的仓库代码（GitHub会把您的脚本下载到它自己的服务器上）
-      - name: Checkout repository code
+      # 步骤1：获取代码
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # 步骤2: 设置Python环境
+      # 步骤2：设置Python环境
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10' # 指定Python版本
+          python-version: '3.10'
 
-      # 步骤3: 根据您的requirements.txt安装依赖库
-      - name: Install Python dependencies
+      # 步骤3：安装依赖
+      - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # 步骤4: 运行您的监控脚本
-      # 关键！通过secrets.XXX将您在GitHub上设置的机密信息作为环境变量传递给脚本
+      # 步骤4：运行脚本
       - name: Run stock monitoring script
         env:
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
           SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
           RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
-        run: python watchstock2.py
+        run: python watchstock.py
