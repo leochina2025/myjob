@@ -9,7 +9,7 @@ import pytz
 
 # -------------------------------- 配置区域 -----------------------------------
 FINNHUB_API_KEY = os.getenv('FINNHUB_API_KEY')
-SMTP_SERVER = os.getenv('SMTP_SERVER', "smtp-mail.outlook.com")
+SMTP_SERVER = os.getenv('SMTP_SERVER', "smtp.gmail.com")  # 将默认值改为Gmail服务器
 SMTP_PORT = int(os.getenv('SMTP_PORT', 587))
 SENDER_EMAIL = os.getenv('SENDER_EMAIL')
 SENDER_PASSWORD = os.getenv('SENDER_PASSWORD')
@@ -143,4 +143,5 @@ def main():
 if __name__ == "__main__":
     # 这个脚本现在会在每次被调用时执行一次完整的监控，然后正常退出
     success = main()
+
     exit(0 if success else 1)
