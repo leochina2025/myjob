@@ -1,31 +1,31 @@
 name: US Stock Monitor Bot
 
 on:
+  # 定时触发器（使用UTC时间）
   schedule:
-    # 使用 UTC 时间
-    - cron: '00 15 * * *'  # 北京时间23:00
-    - cron: '30 23 * * *'  # 北京时间07:30
-  workflow_dispatch:       # 允许手动触发
+    # 北京时间 23:00 (对应UTC时间 15:00)
+    - cron: '0 15 * * *'
+    # 北京时间 7:30 (对应UTC时间 23:30，注意是前一天的23:30)
+    - cron: '30 23 * * *'
+  
+  # 允许手动触发
+  workflow_dispatch:
 
 jobs:
   monitor:
     runs-on: ubuntu-latest
     steps:
-      # 步骤1：获取代码
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 步骤2：设置Python环境
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      # 步骤3：安装依赖
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # 步骤4：运行脚本
       - name: Run stock monitoring script
         env:
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
