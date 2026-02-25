@@ -120,7 +120,7 @@ def check_all_stocks():
 def main():
     """主函数 - 关键修改：移除了无限循环，改为单次执行"""
     # 检查必要环境变量是否设置
-    if not all([FINNHUB_API_KEY, SENDER_EMAIL, SENDER_PASSWORD, RECEIVER_EMAIL]):
+        if not all([FINNHUB_API_KEY, SENDER_EMAIL, SENDER_PASSWORD]) or not RECEIVER_EMAILS:
         print("错误: 缺少必要的环境变量配置!")
         print("请设置以下环境变量:")
         print(" - FINNHUB_API_KEY: Finnhub API密钥")
