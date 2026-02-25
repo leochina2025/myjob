@@ -9,17 +9,20 @@ import pytz
 
 # -------------------------------- 配置区域 -----------------------------------
 FINNHUB_API_KEY = os.getenv('FINNHUB_API_KEY')
-SMTP_SERVER = os.getenv('SMTP_SERVER', "smtp.gmail.com")  # 将默认值改为Gmail服务器
+SMTP_SERVER = os.getenv('SMTP_SERVER', "smtp-mail.outlook.com")
 SMTP_PORT = int(os.getenv('SMTP_PORT', 587))
 SENDER_EMAIL = os.getenv('SENDER_EMAIL')
 SENDER_PASSWORD = os.getenv('SENDER_PASSWORD')
-RECEIVER_EMAIL = os.getenv('RECEIVER_EMAIL')
+# 支持多个收件人邮箱，用逗号分隔
+RECEIVER_EMAILS_STR = os.getenv('RECEIVER_EMAIL', '')
+
+RECEIVER_EMAILS = [email.strip() for email in RECEIVER_EMAILS_STR.split(',') if email.strip()]
 
 DROP_THRESHOLD = -5.0
 
-STOCK_SYMBOLS = ['JPM', 'ORCL', 'LLY', 'NFLX', 'ABBV', 'IBKR', 'AMD', 'CRM', 'MS', 'GS',
-                 'MRK', 'MU', 'DIS', 'APP', 'NOW', 'LRCX', 'ANET', 'INTU', 'BLK', 'QCOM',
-                 'AMAT', 'INTC', 'SCHW', 'TXN', 'ISRG', 'PFE', 'KLAC', 'ADBE', 'CRWD', 'ADI',
+STOCK_SYMBOLS = ['AGQ', 'ORCL', 'LLY', 'NFLX', 'ABBV', 'IBKR', 'AMD', 'CRM', 'GLW', 'GS',
+                 'MRK', 'MU', 'LITE', 'APP', 'NOW', 'LRCX', 'ANET', 'SNXX', 'BLK', 'QCOM',
+                 'AMAT', 'INTC', 'SCHW', 'TXN', 'ISRG', 'PFE', 'KLAC', 'SCCO', 'CRWD', 'ADI',
                  'KKR', 'COIN', 'NEM', 'BMY', 'RBLX', 'SNOW', 'CVNA', 'EQIX', 'NET', 'MRVL',
                  'CRWV', 'MNST', 'VRT', 'EXC', 'ETR', 'EA', 'ZS', 'XEL', 'CVS', 'WDC']
 
@@ -66,7 +69,8 @@ def send_alert_email(symbol, current_price, previous_close, drop_pct):
     
     msg = MIMEText(body, 'plain', 'utf-8')
     msg['From'] = Header(SENDER_EMAIL, 'utf-8')
-    msg['To'] = Header(RECEIVER_EMAIL, 'utf-8')
+    # 邮件头To字段可以只写第一个邮箱，或者用逗号分隔全部
+    msg['To'] = Header(','.join(RECEIVER_EMAILS), 'utf-8')
     msg['Subject'] = Header(subject, 'utf-8')
     
     try:
@@ -74,7 +78,7 @@ def send_alert_email(symbol, current_price, previous_close, drop_pct):
         server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT, timeout=10)
         server.starttls()
         server.login(SENDER_EMAIL, SENDER_PASSWORD)
-        server.sendmail(SENDER_EMAIL, [RECEIVER_EMAIL], msg.as_string())
+        server.sendmail(SENDER_EMAIL, RECEIVER_EMAILS, msg.as_string())
         server.quit()
         print(f"警报邮件发送成功: {symbol}")
         return True
@@ -143,5 +147,4 @@ def main():
 if __name__ == "__main__":
     # 这个脚本现在会在每次被调用时执行一次完整的监控，然后正常退出
     success = main()
-
     exit(0 if success else 1)
