@@ -118,23 +118,23 @@ def check_all_stocks():
     return alert_count
 
 def main():
-    """主函数 - 关键修改：移除了无限循环，改为单次执行"""
+    """主函数"""
     # 检查必要环境变量是否设置
-        if not all([FINNHUB_API_KEY, SENDER_EMAIL, SENDER_PASSWORD]) or not RECEIVER_EMAILS:
+    if not all([FINNHUB_API_KEY, SENDER_EMAIL, SENDER_PASSWORD]) or not RECEIVER_EMAILS:
         print("错误: 缺少必要的环境变量配置!")
         print("请设置以下环境变量:")
         print(" - FINNHUB_API_KEY: Finnhub API密钥")
         print(" - SENDER_EMAIL: 发件邮箱地址")
         print(" - SENDER_PASSWORD: 邮箱应用专用密码")
-        print(" - RECEIVER_EMAIL: 接收警报的邮箱地址")
+        print(" - RECEIVER_EMAIL: 接收警报的邮箱地址（多个邮箱用逗号,分隔）")
         return False
     
     print("美股监控程序开始执行...")
     print(f"监控股票数量: {len(STOCK_SYMBOLS)}")
     print(f"跌幅阈值: {DROP_THRESHOLD}%")
+    print(f"收件人列表: {RECEIVER_EMAILS}")
     print("=" * 50)
     
-    # 关键修改：直接执行一次监控任务，然后退出
     start_time = time.time()
     alert_count = check_all_stocks()
     end_time = time.time()
@@ -147,4 +147,5 @@ def main():
 if __name__ == "__main__":
     # 这个脚本现在会在每次被调用时执行一次完整的监控，然后正常退出
     success = main()
+
     exit(0 if success else 1)
